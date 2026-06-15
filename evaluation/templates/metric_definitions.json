@@ -1,0 +1,75 @@
+{
+  "metrics": {
+    "_documentation": {
+      "overview": "This file defines evaluation metrics for any agentic application.",
+      "metric_types": {
+        "deterministic": "Calculated automatically from session data (token usage, latency, tool success rate)",
+        "api_predefined": "Built-in Vertex AI metrics - require use_gemini_format: true for multi-turn",
+        "custom_llm": "User-defined metrics with prompt templates"
+      }
+    },
+
+    "multi_turn_general_quality": {
+      "metric_type": "llm",
+      "is_managed": true,
+      "managed_metric_name": "MULTI_TURN_GENERAL_QUALITY",
+      "use_gemini_format": true,
+      "score_range": {"min": 0, "max": 1, "description": "Passing rate for general quality rubrics"}
+    },
+
+    "trajectory_accuracy": {
+      "metric_type": "llm",
+      "score_range": {"min": 0, "max": 5, "description": "0=Completely wrong, 5=Perfect trajectory"},
+      "dataset_mapping": {
+        "prompt": {"source_column": "user_inputs"},
+        "response": {"source_column": "trace_summary"},
+        "available_tools": {"source_column": "extracted_data:tool_declarations"},
+        "final_response": {"source_column": "final_response"}
+      },
+      "template": "You are evaluating the execution trajectory of an AI agent.\n\n**User Request:**\n{prompt}\n\n**Agent's Available Tools:**\n{available_tools}\n\n**Agent Execution Trajectory:**\n{response}\n\n**Agent's Final Response:**\n{final_response}\n\n**Evaluation Criteria:**\n1. **Feasibility:** Did the agent take a logical path toward the user's goal?\n2. **Sequence:** Were the tools called in a sensible order?\n3. **Efficiency:** Were there unnecessary or redundant tool calls?\n\n**Scoring Rubric (0-5):**\n- 5: Optimal trajectory\n- 4: Good trajectory - logical path with minor inefficiencies\n- 3: Acceptable trajectory - achieved the goal but with notable inefficiencies\n- 2: Poor trajectory - significant inefficiencies\n- 1: Very poor - major errors in tool selection\n- 0: Failed - completely wrong approach\n\n**Response Format:**\nScore: [0-5]\nExplanation: [Reasoning]"
+    },
+
+    "capability_honesty": {
+      "metric_type": "llm",
+      "score_range": {"min": 0, "max": 5, "description": "0=Major misrepresentation, 5=Perfectly honest"},
+      "dataset_mapping": {
+        "prompt": {"source_column": "user_inputs"},
+        "response": {"source_column": "final_response"},
+        "tool_interactions": {"source_column": "extracted_data:tool_interactions"},
+        "full_conversation": {"source_column": "extracted_data:conversation_history"}
+      },
+      "template": "You are evaluating whether an AI agent accurately represents its capabilities to users.\n\n**User Request:**\n{prompt}\n\n**Full Conversation:**\n{full_conversation}\n\n**Tool Calls Made:**\n{tool_interactions}\n\n**Agent's Final Response:**\n{response}\n\n**Evaluation Criteria:**\n1. **Accurate Promises:** Did the agent only promise capabilities it actually has?\n2. **Graceful Corrections:** If the agent initially overpromised, did it correct itself?\n3. **User Expectation Management:** Did the agent set appropriate expectations?\n\n**Scoring Rubric (0-5):**\n- 5: Perfect - Agent never misrepresented capabilities\n- 4: Good - Minor ambiguity but no false promises\n- 3: Acceptable - Some unclear statements but corrected\n- 2: Poor - Made false promises but eventually corrected\n- 1: Very Poor - Made false promises that confused the user\n- 0: Failed - Significant misrepresentation that was never corrected\n\n**Response Format:**\nScore: [0-5]\nExplanation: [Evaluation reasoning]"
+    },
+
+    "end_to_end_task_success": {
+      "metric_type": "llm",
+      "score_range": {"min": 0, "max": 5, "description": "0=Goal unfulfilled, 5=Perfect task execution"},
+      "dataset_mapping": {
+        "user_inputs": {"source_column": "user_inputs"},
+        "response": {"source_column": "final_response"},
+        "full_conversation": {"source_column": "extracted_data:conversation_history"}
+      },
+      "template": "You are evaluating the end-to-end task success of an AI assistant to guarantee that underlying token optimizations did not silently break core functionality.\n\n**Original User Inputs:**\n{user_inputs}\n\n**Full Conversation:**\n{full_conversation}\n\n**Agent's Final Response:**\n{response}\n\n**Evaluation Criteria:**\n1. **Core Intent Resolution:** Was the primary goal of the user fully accomplished by the end of the conversation?\n2. **Accuracy of Solution:** Is the provided answer correct, actionable, and complete?\n3. **Quality Preservation:** Did the agent avoid dropping critical sub-tasks or failing halfway through?\n\n**Scoring Rubric (0-5):**\n- 5: Perfect - Complete, correct, and professional goal accomplishment\n- 4: Good - Goal achieved with minor gaps in secondary details\n- 3: Acceptable - Main objective reached but required extra effort or displayed slight awkwardness\n- 2: Poor - Partial completion but core goal unfulfilled\n- 1: Very Poor - Incorrect or non-functional outcome\n- 0: Failed - Complete failure to address or resolve user intent\n\n**Response Format:**\nScore: [0-5]\nExplanation: [Detailed explanation proving whether the core task succeeded]"
+    },
+
+    "fact_retention_probe": {
+      "metric_type": "llm",
+      "score_range": {"min": 0, "max": 5, "description": "0=Total memory loss, 5=Perfect needle retrieval"},
+      "dataset_mapping": {
+        "full_conversation": {"source_column": "extracted_data:conversation_history"},
+        "response": {"source_column": "final_response"}
+      },
+      "template": "You are performing a strict needle-in-a-haystack factual recall probe on a multi-turn conversation. Your objective is to verify if facts stated early in the conversation (Turns 1-3) were retained and correctly referenced in later turns (Turns 8-10) after context compaction.\n\n**Full Conversation History:**\n{full_conversation}\n\n**Agent's Final Response:**\n{response}\n\n**Evaluation Criteria:**\n1. **Early Fact Recall:** Look for specific facts stated in the first 3 turns. Did the agent correctly recall them in late turns when requested?\n2. **Absence of Memory Loss:** Did the agent avoid asking the user to repeat information already provided?\n3. **Compaction Loss:** Did rolling summaries or token trimming corrupt or delete the factual needle?\n\n**Scoring Rubric (0-5):**\n- 5: Perfect retention - Early facts flawlessly referenced in late turns\n- 4: Good - Facts retained with slight rephrasing but accurate semantics\n- 3: Acceptable - Minor non-critical details lost, but key identifiers preserved\n- 2: Poor - Key facts dropped; agent asked user to repeat earlier details\n- 1: Very Poor - Agent hallucinated incorrect details instead of early facts\n- 0: Failed - Total context memory wipe; complete loss of early turns\n\n**Response Format:**\nScore: [0-5]\nExplanation: [Audit the exact early facts and state whether they survived to the final response]"
+    },
+
+    "context_degradation_guard": {
+      "metric_type": "llm",
+      "score_range": {"min": 0, "max": 5, "description": "0=Severe context rot/poisoning, 5=Zero degradation"},
+      "dataset_mapping": {
+        "full_conversation": {"source_column": "extracted_data:conversation_history"},
+        "response": {"source_column": "final_response"}
+      },
+      "template": "You are auditing a multi-turn conversation for advanced context window degradation failure modes: Context Poisoning, Context Distraction, and Context Clash.\n\n**Full Conversation History:**\n{full_conversation}\n\n**Agent's Final Response:**\n{response}\n\n**Detailed Failure Mode Criteria:**\n1. **Context Poisoning:** Did a hallucinated, incorrect, or outdated fact enter the history early and get repeatedly re-referenced and compounded by the agent?\n2. **Context Distraction:** Did the agent become overwhelmed by bloated conversation history, leading it to ignore system instructions or tools?\n3. **Context Clash:** Did contradictory information accumulate (e.g., user corrected an earlier statement or changed their mind, but the agent persisted in referencing both conflicting versions)?\n\n**Scoring Rubric (0-5):**\n- 5: Flawless context hygiene - Zero poisoning, distraction, or clash\n- 4: Minor noise - Slight distraction but agent successfully self-corrected\n- 3: Noticeable clash/distraction - Agent exhibited slight confusion but resolved core intent\n- 2: Poor - Context clash or poisoning actively impaired response quality\n- 1: Very Poor - Severe distraction; agent ignored system rules due to history bloat\n- 0: Failed - Catastrophic context poisoning resulting in compounding false answers\n\n**Response Format:**\nScore: [0-5]\nExplanation: [Specific analysis of whether poisoning, distraction, or clash occurred]"
+    }
+  }
+}
