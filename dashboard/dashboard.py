@@ -465,7 +465,7 @@ def main():
     """
     # Use Default theme for a professional "Internal Tool" aesthetic
     with gr.Blocks(theme=gr.themes.Default()) as demo:
-        gr.Markdown("# Agent Optimization & Evaluation Workshop (Accelerate '26)")
+        gr.Markdown("# Context Optimization & Evaluation Dashboard")
         gr.Markdown("Compare deterministic and LLM-based metrics across multiple experiment runs.")
         
         # Hidden state to store the main DataFrame

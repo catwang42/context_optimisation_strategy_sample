@@ -1,6 +1,6 @@
-# Agent Optimization & Evaluation Workshop Dashboard
+# Context Optimization & Evaluation Dashboard
 
-This interactive dashboard allows users to visualize and compare metrics from multiple JSON log files. It is designed for use in the Accelerate '26 workshop to analyze agent execution trajectories and performance.
+This interactive dashboard allows evaluators to visualize and compare metrics across multiple JSON log files. It is designed for enterprise context optimization workflows to analyze agent execution trajectories, token attributions, financial cost, and quality performance.
 
 ## Features
 
