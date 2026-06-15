@@ -13,6 +13,7 @@ from google.genai.types import HttpOptions
 
 from evaluation.core.gemini_prompt_builder import GeminiAnalysisPrompter
 from evaluation.core.diagnoser import ContextDiagnoser
+from evaluation.core.markdown_generator import OptimizationLogGenerator
 
 
 class LogEntry(TypedDict):
@@ -575,8 +576,10 @@ class Analyzer:
         qa_log_path = run_folder / "question_answer_log.md"
         self.generate_question_answer_log(results_file, qa_log_path)
 
-        # 1.5 Run Automated Context Diagnostics
+        # 1.5 Run Automated Context Diagnostics & Optimization Log
         diagnostics = ContextDiagnoser(run_folder).run_diagnostics()
+        if self.config.get("agent_dir"):
+            OptimizationLogGenerator(Path(self.config["agent_dir"])).generate_log()
 
         # 2. Generate Gemini Analysis
         if not skip_gemini:
