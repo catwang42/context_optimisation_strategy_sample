@@ -1,0 +1,12 @@
+{
+  "scenarios": [
+    {
+      "starting_prompt": "I want to schedule a planting appointment for next Monday morning, but let's first check what's currently in my shopping cart.",
+      "conversation_plan": "First, ask the agent to inspect your shopping cart contents. Next, switch tasks and request available planting appointment slots for '2026-08-10'. Book the morning slot. In the next turn, immediately change your mind and request the afternoon slot on '2026-08-12' instead. Check if the agent successfully reconciles the schedule change without context clash."
+    },
+    {
+      "starting_prompt": "My customer ID is VIP-777. I need to book a landscaping service, then get recommendations for desert shrubs, and finally verify my customer ID is attached to the cart.",
+      "conversation_plan": "State your VIP customer ID early. Route through three distinct service interactions: booking a planting service, asking for product recommendations, and modifying the cart. Finally, ask the agent to confirm your exact customer ID to verify that state handoffs between specialized tasks successfully preserved your early identifier."
+    }
+  ]
+}

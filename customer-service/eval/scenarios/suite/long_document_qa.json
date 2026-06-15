@@ -1,0 +1,12 @@
+{
+  "scenarios": [
+    {
+      "starting_prompt": "I need extremely detailed care instructions for growing exotic Japanese Bonsai trees in an arid indoor environment.",
+      "conversation_plan": "Ask the agent for full care instructions, watering schedules, and soil PH guidelines. Follow up by asking about common leaf diseases and pesticide warnings. Over 6 turns, ask for comparisons with outdoor pine care, check if the agent remembers your original arid indoor constraint, and verify whether it starts dropping key instructions."
+    },
+    {
+      "starting_prompt": "Please provide the comprehensive installation guide and warranty details for the automated drip irrigation system.",
+      "conversation_plan": "Request the complete step-by-step installation manual for drip irrigation. Ask follow-up questions about water pressure regulators and winterization protocols. In later turns, verify if the agent retains the specific warranty length mentioned early in the conversation."
+    }
+  ]
+}

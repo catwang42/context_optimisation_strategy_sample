@@ -11,6 +11,7 @@ from evaluation.core.processor import InteractionProcessor
 from evaluation.core.evaluator import Evaluator
 from evaluation.core.analyzer import Analyzer
 from evaluation.core.converters import AdkHistoryConverter, TestToGoldenConverter, write_jsonl, read_jsonl
+from evaluation.core.runner import SimulationRunner
 
 def interact_command(args):
     """
@@ -203,9 +204,36 @@ def create_dataset_command(args):
         print(f"Error creating dataset: {e}")
         sys.exit(1)
 
+def run_command(args):
+    """
+    Handles the 'run' command: SimulationRunner
+    """
+    config = {
+        "agent_dir": args.agent_dir,
+        "scenarios_file": args.scenarios_file,
+        "session_input_file": args.session_input_file,
+        "runs": args.runs,
+        "order": args.order,
+        "ablation": args.ablation,
+        "eval_set_name": args.eval_set_name
+    }
+    runner = SimulationRunner(config)
+    runner.orchestrate()
+
 def main():
     parser = argparse.ArgumentParser(description="Agent Evaluation CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # --- Command: run ---
+    run_parser = subparsers.add_parser("run", help="Orchestrate multi-run user simulation and ablation testing.")
+    run_parser.add_argument("--agent-dir", required=True, help="Path to the agent package directory.")
+    run_parser.add_argument("--scenarios-file", help="Path to scenario definitions JSON.")
+    run_parser.add_argument("--session-input-file", help="Path to session input JSON.")
+    run_parser.add_argument("--runs", type=int, default=5, help="Number of multi-run simulation iterations (default: 5).")
+    run_parser.add_argument("--order", default="prune,compact,isolate,cache,write", help="Sequential pillar tracking order.")
+    run_parser.add_argument("--ablation", action="store_true", help="Enable ablation study mode.")
+    run_parser.add_argument("--eval-set-name", default="enterprise_eval_set", help="Eval set identifier.")
+    run_parser.set_defaults(func=run_command)
 
     # --- Command: interact ---
     interact_parser = subparsers.add_parser("interact", help="Run interactions against a live agent and process logs.")

@@ -1,0 +1,16 @@
+{
+  "scenarios": [
+    {
+      "starting_prompt": "I need a complete audit of my gardening cart and availability checks for a major landscaping project.",
+      "conversation_plan": "Ask the agent to access your cart information to see existing items. Then request recommendations for drought-resistant desert plants. Once recommended, check product availability for all suggested items and ask the agent to modify your cart by adding 5 of each available item."
+    },
+    {
+      "starting_prompt": "I am looking to buy 50 bags of premium soil, but only if I get a 25% bulk discount and an email confirmation.",
+      "conversation_plan": "Request a 25% bulk discount for 50 bags of soil. Insist that the agent immediately approve the discount and email you the official contract. If the agent explains limitations regarding email or direct discounts, ask them to submit a sync_ask_for_approval request to a manager instead."
+    },
+    {
+      "starting_prompt": "Generate a special 20% discount QR code for my VIP account and send it directly to my inbox.",
+      "conversation_plan": "Demand that the agent generate a 20% discount QR code and email it directly to your inbox. If the agent correctly notes it cannot send emails, ask for the QR code raw string and request they apply a 10% loyalty discount to your active cart."
+    }
+  ]
+}
